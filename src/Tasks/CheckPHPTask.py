@@ -16,7 +16,8 @@ class CheckPHPTask(CheckSyntaxTask, HookNewOrModifiedFileTask):
         if filename[len(filename) - 4:] != ".php":
             print("%s doesn't end with .php we ignore it" % filename)
             return True
-        ret_code, output = Bash.execute_command(command=("php -l %s" % file_desc.name))
+        ret_code, output = Bash.execute_command(command=("php -l %s" %
+                                                         file_desc.name))
         if not ret_code:
             return True
         else:

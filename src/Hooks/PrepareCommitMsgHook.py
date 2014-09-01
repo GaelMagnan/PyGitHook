@@ -14,10 +14,5 @@ class PrepareCommitMsgHook(LocalHook):
 
     def get_exec_params(self):
         params = super(PrepareCommitMsgHook, self).get_exec_params()
-        params.extend(get_file_parameters())
+        params['commit_msg_file'] = params['$1']
         return params
-
-def get_file_parameters():
-    line = sys.stdin.readline()
-    (commit_msg_file, commit_desc) = line.strip().split()
-    return {'commit_msg_file': commit_msg_file, 'commit_desc': commit_desc}

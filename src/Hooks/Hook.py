@@ -15,7 +15,7 @@ from src.Tasks import HookTask
 
 class Hook(object):
 
-    def __init__(self, tasks=[], conf_location):
+    def __init__(self, tasks=[], conf_location=""):
         self.tasks=tasks
         self.conf_location = conf_location
 

@@ -17,7 +17,8 @@ class CheckPythonPyflakesTask(CheckSyntaxTask, HookNewOrModifiedFileTask):
 
 
     def check_syntax(self, file_desc, filename=""):
-        ret_code, output = Bash.execute_command(command="/usr/local/bin/pyflakes %s" % file_desc.name)
+        command = "/usr/local/bin/pyflakes %s" % file_desc.name
+        ret_code, output = Bash.execute_command(command=command)
         if not ret_code:
             return True
         else:

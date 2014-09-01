@@ -28,7 +28,8 @@ class CheckPythonPyLintTask(CheckSyntaxTask, HookNewOrModifiedFileTask):
 
     def check_syntax(self, file_desc, filename=""):
         """Execute PyLint and parse the result, fails if the MINIMUM_GRADE is not obtained"""
-        pylint_cmd = "%s --rcfile %s %s" % (self.PYLINT_COMMANDE, self.CONF_LOCATION + self.PYLINT_FILE_NAME,
+        pylint_cmd = "%s --rcfile %s %s" % (self.PYLINT_COMMANDE, 
+                                            self.conf_location + self.PYLINT_FILE_NAME,
                                             file_desc.name)
         process = Popen(shlex.split(pylint_cmd), stdout=PIPE, stderr=PIPE)
         (data, _errors) = process.communicate()

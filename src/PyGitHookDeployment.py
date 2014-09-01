@@ -18,15 +18,10 @@ def get_args():
 	parser = argparse.ArgumentParser(description="Installer for PyGitHook, this is a usefull tool but not necessary you can also do it by hand.")
 	parser.add_argument('-v', '--version', action='version', version="0.1")
 
-	manual_conf_group = parser.add_argument_group(title='Manual Conf')
-	file_conf_group = parser.add_argument_group(title='File Conf')
-
-	manual_conf_group.add_argument('-gd', '--git_directory', action='store', help="The directory of the git project you want to creat a hook for.")
-	manual_conf_group.add_argument('-pd', '--pygithook_directory', action='store', help="The directory of PyGitHook.")
-	manual_conf_group.add_argument('-ht', '--hook_type', action='store', help="The type of hook you want to create.")
-	manual_conf_group.add_argument('-t', '--tasks', nargs='+', help="The tasks you want your hook to execute.")
-
-	file_conf_group.add_argument('-f', '--file', action='store', help="A json config file used to configure your hook.")
+	parser.add_argument('-gd', '--git_directory', action='store', help="The directory of the git project you want to creat a hook for.")
+	parser.add_argument('-pd', '--pygithook_directory', action='store', help="The directory of PyGitHook.")
+	parser.add_argument('-ht', '--hook_type', action='store', help="The type of hook you want to create.")
+	parser.add_argument('-t', '--tasks', nargs='+', help="The tasks you want your hook to execute.")
 
 	return vars(parser.parse_args())
 
@@ -56,7 +51,7 @@ def create_hook(hook_type, git_hook_path, pygithook_path, tasks):
 					  		" import " + str(y) + "\n", tasks, "") +
 					 "tasks = [${TasksList}]\n\n" +
 					 "if __name__ == '__main__':\n" +
-					 "    main( ${HookType}, tasks, ${ConfPath} )\n")
+					 "    main( ${HookType}, tasks, '${ConfPath}' )\n")
 	hook_template = string.Template(hook_template)
 
 	params = {'exec' : sys.executable,
@@ -72,28 +67,16 @@ def create_hook(hook_type, git_hook_path, pygithook_path, tasks):
 
 	make_executable(file_name)
 
-
-def get_config_from_file(file_path):
-	with open(file_path, "r") as config_file:
-		config = json.load(config_file)
-
-	return config
-
-
 if __name__ == "__main__":
 	args = get_args()
-	if args.get('file',None):
-		(hook_directory, hook_type, pygithook_path,
-		 tasks) = get_config_from_file(args['file'])
-	else:
-		hook_directory = args['git_directory']
-		hook_type = args['hook_type']
-		pygithook_path = args['pygithook_directory']
-		tasks = args['tasks']
+	hook_directory =  os.path.abspath(args['git_directory'])
+	hook_type = args['hook_type']
+	pygithook_path = os.path.abspath(args['pygithook_directory'])
+	tasks = args['tasks']
 
 	if hook_type not in hooks_script.keys():
 		print("Invalid hook_type(%s), should be one of:%s" %
-			  (hook_type, str(HOOK_TYPE_LIST)))
+			  (hook_type, str(hooks_script.keys())))
 		sys.exit(1)
 
 	hook_path = get_hooks_path(hook_directory)

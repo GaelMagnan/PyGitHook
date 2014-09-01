@@ -24,7 +24,8 @@ class CheckMergeErrorTask(HookNewOrModifiedFileTask):
             i = i + 1
             err_code = re.search(self.regex, line)
             if err_code is not None:
-                print(">> Merge Errors(%s) Line:%d, please check the file\n" % (str(err_code.group(0)), i))
+                print(">> Merge Errors(%s) Line:%d, please check the file\n" %
+                      (str(err_code.group(0)), i))
                 error = True
 
         if not error:
