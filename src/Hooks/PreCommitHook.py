@@ -11,4 +11,11 @@ Gael Magnan de bornier
 from src.Hooks.LocalHook import LocalHook
 
 class PreCommitHook(LocalHook):
-    pass
+
+    def get_file(self, filename, **kwargs):
+        ret_code, output = Bash.execute_command("git show :%s " % filename)
+        if not ret_code:
+            return output
+        else:
+            print("Read error file:%s" % filename)
+        return None

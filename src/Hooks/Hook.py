@@ -85,42 +85,44 @@ class Hook(object):
             if not task().execute(**kwargs):
                 return False
 
-        for file_type in ['new_files', 'modified_files', 'deleted_files']:
-            files_to_check = kwargs[file_type]
-            for filename in files_to_check:
-                if file_type != "deleted_files":
-                    try:
-                        file_value = self.get_file(filename, **kwargs)
-                    except:
-                        print("Could not read %s" % filename)
-                        return False
-                    with self.get_temp_file() as tmp:
+        if new_file_task or modified_file_task or deleted_file_task:
+            for file_type in ['new_files', 'modified_files', 'deleted_files']:
+                files_to_check = kwargs[file_type]
+                for filename in files_to_check:
+                    if(file_type != "deleted_files" and
+                       len(new_file_task) + len(modified_file_task) > 0 ):
                         try:
-                            self.write_file_value_in_file(file_value, tmp)
+                            file_value = self.get_file(filename, **kwargs)
                         except:
-                            print("Could not write %s " % filename)
+                            print("Could not read %s" % filename)
                             return False
-                        kwargs['file_desc'] = tmp
+                        with self.get_temp_file() as tmp:
+                            try:
+                                self.write_file_value_in_file(file_value, tmp)
+                            except:
+                                print("Could not write %s " % filename)
+                                return False
+                            kwargs['file_desc'] = tmp
+                            kwargs['filename'] = filename
+                            kwargs['file_value'] = file_value
+
+                            if file_type == "new_files":
+                                for task in new_file_task:
+                                    if not task().execute(**kwargs):
+                                        return False
+
+                            elif file_type == "modified_files":
+                                for task in modified_file_task:
+                                    if not task().execute(**kwargs):
+                                        return False
+
+                    else:
+                        kwargs['file_desc'] = None
                         kwargs['filename'] = filename
-                        kwargs['file_value'] = file_value
-
-                        if file_type == "new_files":
-                            for task in new_file_task:
-                                if not task().execute(**kwargs):
-                                    return False
-
-                        elif file_type == "modified_files":
-                            for task in modified_file_task:
-                                if not task().execute(**kwargs):
-                                    return False
-
-                else:
-                    kwargs['file_desc'] = None
-                    kwargs['filename'] = filename
-                    kwargs['file_value'] = None
-                    for task in deleted_file_task:
-                        if not task().execute(**kwargs):
-                            return False
+                        kwargs['file_value'] = None
+                        for task in deleted_file_task:
+                            if not task().execute(**kwargs):
+                                return False
 
         return True
 
