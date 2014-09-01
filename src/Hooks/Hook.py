@@ -134,7 +134,7 @@ class Hook(object):
 
 
     def get_temp_file(self, mode="r+"):
-        return NamedTemporaryFile(mode=mode)
+        return NamedTemporaryFile(mode=mode, delete=False)
 
 
     def write_file_value_in_file(self, file_value, file_desc):

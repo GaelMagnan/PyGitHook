@@ -20,7 +20,7 @@ class CheckPythonPEP8Task(CheckSyntaxTask, HookNewOrModifiedFileTask):
         if filename[len(filename) - 3:] != ".py":
             print("%s doesn't end with .py we ignore it" % filename)
             return True
-        config = self.conf_location + self.PEP8_FILE_LOCATION
+        config = self.conf_location + self.PEP8_FILE_NAME
         command = "pep8 --config=%s %s" % (config, file_desc.name)
         ret_code, output = Bash.execute_command(command=command)
         if not ret_code:
