@@ -8,6 +8,7 @@ AUTHOR:
 Gael Magnan de bornier
 """
 
+from src.Utils import Bash
 from src.Hooks.LocalHook import LocalHook
 
 class PreCommitHook(LocalHook):
