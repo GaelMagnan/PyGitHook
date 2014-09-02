@@ -15,7 +15,9 @@ from src.Tasks import HookTask
 
 class Hook(object):
 
-    def __init__(self, tasks=[], conf_location=""):
+    def __init__(self, tasks=None, conf_location=""):
+        if tasks is None:
+            tasks=[]
         self.tasks=tasks
         self.conf_location = conf_location
 
@@ -182,7 +184,7 @@ class Hook(object):
                       " Please warn and adminitrator " % line)
 
 
-def main(_klass, tasks=[],conf_location=""):
+def main(_klass, tasks=None,conf_location=""):
     if issubclass(_klass, Hook):
       hook = _klass(tasks,conf_location)
       hook.main_process()
