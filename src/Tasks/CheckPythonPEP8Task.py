@@ -7,6 +7,8 @@ AUTHOR:
     Gael Magnan de bornier
 """
 
+import os
+
 from src.Tasks.CheckSyntaxTask import CheckSyntaxTask
 from src.Tasks.HookTask import HookNewOrModifiedFileTask
 from src.Utils import Bash
@@ -20,9 +22,9 @@ class CheckPythonPEP8Task(CheckSyntaxTask, HookNewOrModifiedFileTask):
         if filename[len(filename) - 3:] != ".py":
             print("%s doesn't end with .py we ignore it" % filename)
             return True
-        config = self.conf_location + self.PEP8_FILE_NAME
+        config = os.path.join(self.conf_location, self.PEP8_FILE_NAME)
         command = "pep8 --config=%s %s" % (config, file_desc.name)
-        ret_code, output = Bash.execute_command(command=command)
+	ret_code, output = Bash.execute_command(command=command)
         if not ret_code:
             return True
         else:
