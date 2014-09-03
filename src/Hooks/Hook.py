@@ -92,7 +92,7 @@ class Hook(object):
                 files_to_check = kwargs[file_type]
                 for filename in files_to_check:
                     if(file_type != "deleted_files" and
-                       len(new_file_task) + len(modified_file_task) > 0 ):
+                       len(new_file_task) + len(modified_file_task) > 0):
                         try:
                             file_value = self.get_file(filename, **kwargs)
                         except:
@@ -104,26 +104,26 @@ class Hook(object):
                             except:
                                 print("Could not write %s " % filename)
                                 return False
-                            kwargs['file_desc'] = tmp
-                            kwargs['filename'] = filename
-                            kwargs['file_value'] = file_value
 
                             if file_type == "new_files":
                                 for task in new_file_task:
-                                    if not task().execute(**kwargs):
+                                    if not task().execute(file_desc=tmp,
+                                                          filename=filename,
+                                                          file_value=file_value,
+                                                          **kwargs):
                                         return False
 
                             elif file_type == "modified_files":
                                 for task in modified_file_task:
-                                    if not task().execute(**kwargs):
+                                    if not task().execute(file_desc=tmp,
+                                                          filename=filename,
+                                                          file_value=file_value,
+                                                          **kwargs):
                                         return False
 
                     else:
-                        kwargs['file_desc'] = None
-                        kwargs['filename'] = filename
-                        kwargs['file_value'] = None
                         for task in deleted_file_task:
-                            if not task().execute(**kwargs):
+                            if not task().execute(filename=filename,**kwargs):
                                 return False
 
         return True
