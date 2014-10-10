@@ -12,7 +12,7 @@ from src.Hooks.LocalHook import LocalHook
 
 class PrepareCommitMsgHook(LocalHook):
 
-    def get_exec_params(self):
-        params = super(PrepareCommitMsgHook, self).get_exec_params()
-        params['commit_msg_file'] = params['$1']
+    def get_exec_params(self, **kwargs):
+        params = super(PrepareCommitMsgHook, self).get_exec_params(**kwargs)
+        params.update({'commit_msg_file': params['$1']})
         return params

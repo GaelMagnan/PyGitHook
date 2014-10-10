@@ -24,6 +24,17 @@ class ExchangeHook(Hook):
 
     NO_REF_COMMIT = 40 * '0'
 
+    def get_line_params(self, **kwargs):
+        return {'ref_received': self.get_refs_parameters(**kwargs)}
+
+    def process(self, ref_received, **kwargs):
+        """Main treatment, execute the tasks """
+        tasks = self.get_tasks_group_by_type()
+        for ref in ref_received:
+            kwargs.update(ref)
+            if not self.execute_tasks_group_by_type(*tasks, **kwargs):
+                return False
+        return True
 
     def get_file(self, filename, newrev, **kwargs):
         ret_code, output = Bash.execute_command("git cat-file blob %s:%s " %
@@ -43,10 +54,20 @@ class ExchangeHook(Hook):
             return output
         return ""
 
-
-    def get_refs_parameters(self):
+    def get_refs_parameters(self, **kwargs):
         ret = []
         for line in sys.stdin.readlines():
             (base, commit, ref) = line.strip().split()
+            if base == self.NO_REF_COMMIT:
+                base = "master"
             ret.append({'oldrev': base, 'newrev': commit, 'refname': ref})
         return ret
+
+    def get_files_params(self, ref_received, **kwargs):
+        new_ref = []
+        for ref in ref_received:
+            ref.update(self.get_files_grouped_by_change(origin=ref['oldrev'],
+                                                        head=ref['newrev']))
+            new_ref.append(ref)
+
+        return {'ref_received': new_ref}

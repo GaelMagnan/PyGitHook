@@ -17,13 +17,13 @@ class Hook(object):
 
     def __init__(self, tasks=None, conf_location=""):
         if tasks is None:
-            tasks=[]
-        self.tasks=tasks
+            tasks = []
+        self.tasks = tasks
         self.conf_location = conf_location
 
 
     def main_process(self):
-        """ Main function"""
+        """Main function"""
         kwargs = self.get_exec_params()
         result = self.process(**kwargs)
 
@@ -32,13 +32,21 @@ class Hook(object):
         sys.exit(1)
 
 
+    def get_script_params(self, **kwargs):
+        return {'${0}'.format(i): arg for i, arg in enumerate(sys.argv)}
+
+    def get_line_params(self, **kwargs):
+        return {}
+
+    def get_files_params(self, **kwargs):
+        return self.get_files_grouped_by_change(**kwargs)
+
     def get_exec_params(self):
         """Reads the inputs to get execution parameters"""
-        params = {}
-        for i,arg in enumerate(sys.argv):
-            params['$%d' % i] = arg
-        params.update(self.get_files_grouped_by_change())
-        params['conf_location'] = self.conf_location
+        params = {'conf_location': self.conf_location}
+        params.update(self.get_script_params(**params))
+        params.update(self.get_line_params(**params))
+        params.update(self.get_files_params(**params))
         return params
 
 
@@ -94,13 +102,13 @@ class Hook(object):
                     if(file_type != "deleted_files" and
                        len(new_file_task) + len(modified_file_task) > 0):
                         try:
-                            file_value = self.get_file(filename, **kwargs)
+                            file_val = self.get_file(filename, **kwargs)
                         except:
                             print("Could not read %s" % filename)
                             return False
                         with self.get_temp_file() as tmp:
                             try:
-                                self.write_file_value_in_file(file_value, tmp)
+                                self.write_file_value_in_file(file_val, tmp)
                             except:
                                 print("Could not write %s " % filename)
                                 return False
@@ -109,7 +117,7 @@ class Hook(object):
                                 for task in new_file_task:
                                     if not task().execute(file_desc=tmp,
                                                           filename=filename,
-                                                          file_value=file_value,
+                                                          file_value=file_val,
                                                           **kwargs):
                                         return False
 
@@ -117,13 +125,13 @@ class Hook(object):
                                 for task in modified_file_task:
                                     if not task().execute(file_desc=tmp,
                                                           filename=filename,
-                                                          file_value=file_value,
+                                                          file_value=file_val,
                                                           **kwargs):
                                         return False
 
                     else:
                         for task in deleted_file_task:
-                            if not task().execute(filename=filename,**kwargs):
+                            if not task().execute(filename=filename, **kwargs):
                                 return False
 
         return True
@@ -157,7 +165,7 @@ class Hook(object):
         for line in file_diffs:
             if len(line) < 3:
                 continue
-            mode,filename = self.get_mode_and_filname(line)
+            mode, filename = self.get_mode_and_filname(line)
             if mode == "A":
                 added.append(filename)
             elif mode == "M":
@@ -172,24 +180,24 @@ class Hook(object):
     def get_mode_and_filname(self, line):
         try:
             mode, filename = line.split()
-            return mode,filename
+            return mode, filename
         except:
             line_splited = line.split()
             if len(line_splited) > 2:
                 mode = line_splited[0]
-                filename = line.replace(mod, "", 1)
-                return mode,filename
+                filename = line.replace(mode, "", 1)
+                return mode, filename
             else:
-                print("An error occured while trying to split:%s" +
-                      " Please warn and adminitrator " % line)
+                print("An error occured while trying to split:{0}"
+                      " Please warn and adminitrator ".format(line))
 
 
-def main(_klass, tasks=None,conf_location=""):
+def main(_klass, tasks=None, conf_location=""):
     if issubclass(_klass, Hook):
-      hook = _klass(tasks,conf_location)
-      hook.main_process()
+        hook = _klass(tasks, conf_location)
+        hook.main_process()
     else:
-      print("Not a valid class, should inherit from Hook")
-      sys.exit(1)
+        print("Not a valid class, should inherit from Hook")
+        sys.exit(1)
 
     sys.exit(0)
