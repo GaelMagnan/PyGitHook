@@ -18,9 +18,11 @@ class PrefixWithBranchNameTask(HookTask):
             print('An error occured trying to get the branch name')
             return False
 
-        with open(commit_msg_file,'r+') as commit_file:
+        with open(commit_msg_file, 'r+') as commit_file:
+            branch_name = output[0].rstrip('\r\n')
             content = commit_file.read()
-            commit_file.seek(0,0)
-            commit_file.write(output[0].rstrip('\r\n') + ':' + content)
+            if not content.startswith(branch_name):
+                commit_file.seek(0, 0)
+                commit_file.write(branch_name + ':' + content)
 
         return True
