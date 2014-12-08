@@ -8,7 +8,9 @@ AUTHOR:
 """
 
 import sys
+import os
 from tempfile import NamedTemporaryFile
+from contextlib import contextmanager
 
 from src.Utils import Bash
 from src.Tasks import HookTask
@@ -144,9 +146,16 @@ class Hook(object):
     def get_file_diffs(self, **kwargs):
         pass
 
-
+    @contextmanager
     def get_temp_file(self, mode="r+"):
-        return NamedTemporaryFile(mode=mode, delete=False)
+        f = NamedTemporaryFile(mode=mode, delete=False)
+        try:
+            yield f
+        finally:
+            try:
+                os.unlink(f.name)
+            except OSError:
+                pass
 
 
     def write_file_value_in_file(self, file_value, file_desc):
