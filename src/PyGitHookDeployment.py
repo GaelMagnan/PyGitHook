@@ -1,4 +1,4 @@
-#!python
+#!/usr/bin/env python
 
 import os
 import sys
@@ -30,14 +30,14 @@ def get_args():
 
 def get_hooks_path(git_directory):
     if os.path.exists(git_directory):
-        if git_directory.endswith('.git/'):
+        if git_directory.endswith('.git'):
             git_hook_path = os.path.join(git_directory, "hooks")
         else:
             git_hook_path = os.path.join(git_directory, ".git/hooks")
         if os.path.exists(git_hook_path):
             return git_hook_path
         else:
-            print("Invalid git directory, cannot find the .git/hooks repertory")
+            print("Invalid git directory, cannot find the {0} repertory".format(git_hook_path))
     else:
         print("Invalid git directory, this repertory doesn't exist")
     sys.exit(1)
