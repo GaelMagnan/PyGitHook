@@ -9,6 +9,7 @@ AUTHOR:
 
 import sys
 import os
+import re
 from tempfile import NamedTemporaryFile
 from contextlib import contextmanager
 
@@ -17,9 +18,12 @@ from src.Tasks import HookTask
 
 class Hook(object):
 
-    def __init__(self, tasks=None, conf_location=""):
+    def __init__(self, tasks=None, conf_location="", exclude=None):
         if tasks is None:
             tasks = []
+        if exclude is None:
+            exclude = []
+        self.exclude = exclude
         self.tasks = tasks
         self.conf_location = conf_location
 
@@ -107,6 +111,10 @@ class Hook(object):
             for file_type in ['new_files', 'modified_files', 'deleted_files']:
                 files_to_check = kwargs[file_type]
                 for filename in files_to_check:
+                    exclusion_matchs = [ x for x in self.exclude if re.match(x, filename)]
+                    if exclusion_match:
+                        print( "{0} ignored because it matches: {1}".format( filename, exclusion_matchs ) )
+                        continue
                     if(file_type != "deleted_files" and
                        len(new_file_task) + len(modified_file_task) > 0):
                         try:
@@ -207,9 +215,9 @@ class Hook(object):
                       " Please warn and adminitrator ".format(line))
 
 
-def main(_klass, tasks=None, conf_location=""):
+def main(_klass, tasks=None, conf_location="", exclude=None):
     if issubclass(_klass, Hook):
-        hook = _klass(tasks, conf_location)
+        hook = _klass(tasks, conf_location, exclude)
         hook.main_process()
     else:
         print("Not a valid class, should inherit from Hook")
