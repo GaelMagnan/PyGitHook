@@ -55,8 +55,14 @@ class Hook(object):
     def process(self, **kwargs):
         """Main treatment, execute the tasks return False if any task fails,
         true otherwise"""
-        tasks = self.get_tasks_group_by_type()
-        return self.execute_tasks_group_by_type(*tasks, **kwargs)
+        try:
+            tasks = self.get_tasks_group_by_type()
+            return self.execute_tasks_group_by_type(*tasks, **kwargs)
+        except Exception as e:
+            print("An error occured during the runing of the script, "
+                  "please report this following message to you administrator.")
+            print(e)
+            return False
 
 
     def get_tasks_group_by_type(self):

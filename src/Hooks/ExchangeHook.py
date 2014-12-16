@@ -9,6 +9,7 @@ AUTHOR:
     Gael Magnan de bornier
 """
 
+import sys
 
 from src.Utils import Bash
 from src.Hooks.Hook import Hook
@@ -29,12 +30,18 @@ class ExchangeHook(Hook):
 
     def process(self, ref_received, **kwargs):
         """Main treatment, execute the tasks """
-        tasks = self.get_tasks_group_by_type()
-        for ref in ref_received:
-            kwargs.update(ref)
-            if not self.execute_tasks_group_by_type(*tasks, **kwargs):
-                return False
-        return True
+        try:
+            tasks = self.get_tasks_group_by_type()
+            for ref in ref_received:
+                kwargs.update(ref)
+                if not self.execute_tasks_group_by_type(*tasks, **kwargs):
+                    return False
+            return True
+        except Exception as e:
+            print("An error occured during the runing of the script, "
+                  "please report this following message to you administrator.")
+            print(e)
+            return False
 
     def get_file(self, filename, newrev, **kwargs):
         ret_code, output = Bash.execute_command("git cat-file blob %s:%s " %
