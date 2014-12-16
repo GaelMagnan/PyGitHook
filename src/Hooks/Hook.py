@@ -112,7 +112,7 @@ class Hook(object):
                 files_to_check = kwargs[file_type]
                 for filename in files_to_check:
                     exclusion_matchs = [ x for x in self.exclude if re.match(x, filename)]
-                    if exclusion_match:
+                    if exclusion_matchs:
                         print( "{0} ignored because it matches: {1}".format( filename, exclusion_matchs ) )
                         continue
                     if(file_type != "deleted_files" and
