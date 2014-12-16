@@ -17,6 +17,11 @@ class CheckPythonPyflakesTask(CheckSyntaxTask, HookNewOrModifiedFileTask):
 
 
     def check_syntax(self, file_desc, filename=""):
+
+        if filename[len(filename) - 3:] != ".py":
+            print("{0} doesn't end with .py we ignore it".format(filename))
+            return True
+
         command = "/usr/local/bin/pyflakes %s" % file_desc.name
         ret_code, output = Bash.execute_command(command=command)
         if not ret_code:
