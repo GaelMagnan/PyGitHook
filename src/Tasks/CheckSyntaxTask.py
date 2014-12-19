@@ -20,9 +20,9 @@ class CheckSyntaxTask(HookFileTask):
     def execute(self, file_desc, filename, conf_location="", **kwargs):
 
         self.conf_location = conf_location
-        print("> validating syntax for '%s' ... " % filename)
+        print("> Validating syntax for '%s' ... " % filename)
         if not self.check_syntax(file_desc, filename):
-            print(">> Synthax Error, please check the file\n")
+            print(">> Syntax Error, please check the file\n")
             return False
 
         print(">> OK")
