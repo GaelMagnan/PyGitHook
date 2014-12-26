@@ -35,7 +35,7 @@ class ExchangeHook(Hook):
             for ref in ref_received:
                 kwargs.update(ref)
                 if 'newrev' in ref and ref['newrev'] == self.NO_REF_COMMIT:
-                    print("Branch deletion not handler as of yet, doing nothing.")
+                    print("Branch deletion not handled as of yet, doing nothing.")
                     return True
                 if not self.execute_tasks_group_by_type(*tasks, **kwargs):
                     return False
