@@ -1,5 +1,5 @@
 """
-Bash is a placeholder for the execute_command function;
+Bash is a placeholder for the execute_command function
 
 execute_command is a wrapper around subprocess.check_output.
 
@@ -30,21 +30,25 @@ def execute_command(command, shell=False):
 
 
 def execute_piped_command(command1, command2):
+    """Execute two bash commands, the stdout of the first one is piped
+    to the stdin of the second.
+    returns a return code 0 for success the error code otherwise
+    and the output of the commands"""
 
     try:
         p1 = Popen(command1.split(), stdout=PIPE)
     except CalledProcessError, error:
-        return error.returncode, error.output.split('\n')
+        return error.returncode, error.output
     else:
         try:
-            p2 = Popen(command2.split(), stdin=p1.stdout, stderr=STDOUT )
+            p2 = Popen(command2.split(), stdin=p1.stdout, stderr=PIPE )
         except CalledProcessError, error:
-            return error.returncode, error.output.split('\n')
+            return error.returncode, error.output
         else:
             try:
                 p1.stdout.close()
                 output = p2.communicate()[0]
-                return 0, output.split('\n')
+                return 0, output
             except StandardError, error:
                 print("The commands: {0} failed.\n".format((command1, command2)))
                 print("Please transmit the following message to your administrator:")

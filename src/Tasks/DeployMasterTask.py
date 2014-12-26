@@ -24,7 +24,7 @@ class DeployMasterTask(HookTask):
         if ret_code:
             print("Error getting the archive from master. Contact your administrator.")
             print("command:{0} | {1}".format(command1, command2))
-            print("ret_code:{0} output:{1}".format(ret_code, "\n".join(output)))
+            print("ret_code:{0} output:{1}".format(ret_code, output))
             return False
 
         print("master has been successfully deployed in {0}".format(to))

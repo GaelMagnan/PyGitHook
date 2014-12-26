@@ -34,6 +34,9 @@ class ExchangeHook(Hook):
             tasks = self.get_tasks_group_by_type()
             for ref in ref_received:
                 kwargs.update(ref)
+                if 'newrev' in ref and ref['newrev'] == self.NO_REF_COMMIT:
+                    print("Branch deletion not handler as of yet, doing nothing.")
+                    return True
                 if not self.execute_tasks_group_by_type(*tasks, **kwargs):
                     return False
             return True
@@ -53,7 +56,7 @@ class ExchangeHook(Hook):
         return None
 
 
-    def get_file_diffs(self, origin, head):
+    def get_file_diffs(self, origin, head, **kwargs):
         command = ("git diff-tree --no-commit-id --name-status -r %s %s" %
                    (origin, head))
         ret_code, output = Bash.execute_command(command=command)
